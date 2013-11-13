@@ -26,14 +26,26 @@ namespace PowerpointMaker
             {
 
                 presentation
-                    .AddSlide()
-                    .Title("Title");
+                    .AddTitleSlide()
+                    .Title("I <3 NY");
+
+                presentation
+                    .AddSlide("Image")
+                    .Caption("Brooklyn Bridge")
+                    .Title("A Day in Manhattan")
+                    .File("image.jpg");
 
                 presentation.
                     AddSlide("Content")
-                    .Top("Top")
-                    .Center("Center")
-                    .Bottom("Bottom");
+                    .Top("I love...")
+                    .Center("New York")
+                    .Bottom("...this city");
+
+                presentation
+                    .AddSlide("Content")
+                    .Top("Stay away from")
+                    .Center("CENTRAL PARK")
+                    .Bottom("during nighttime...");
 
                 presentation.
                     AddSlide("Sourcecode")
@@ -43,17 +55,9 @@ namespace PowerpointMaker
                     .HightlightLine(9)
                     .HightlightLine(14);
 
-                presentation
-                    .AddSlide("Content")
-                    .Top("One")
-                    .Center("Two")
-                    .Bottom("Three");
+                
 
-                presentation
-                    .AddSlide("Image")
-                    .Caption("Caption")
-                    .Title("Title")
-                    .File("Image.jpg");
+                
 
                 presentation
                     .Save("Presentation");

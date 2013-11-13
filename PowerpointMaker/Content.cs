@@ -5,7 +5,7 @@ using Microsoft.Office.Interop.PowerPoint;
 
 namespace PowerpointMaker
 {
-    public class Content
+    public class Content : BaseSlide
     {
         private readonly Slide _slide;
 
@@ -36,7 +36,7 @@ namespace PowerpointMaker
         }
     }
 
-    public class Sourcecode
+    public class Sourcecode : BaseSlide
     {
         private readonly Slide _slide;
 
@@ -75,7 +75,7 @@ namespace PowerpointMaker
         }
     }
 
-    public class TitleSlide
+    public class TitleSlide : BaseSlide
     {
         private readonly Slide _slide;
 
@@ -91,7 +91,7 @@ namespace PowerpointMaker
         }
     }
 
-    public class Image
+    public class Image : BaseSlide
     {
         private readonly Slide _slide;
 
@@ -112,10 +112,19 @@ namespace PowerpointMaker
             return this;
         }
 
-        public Image File(string fileName)
+        public Image File(string filename)
         {
-            _slide.Shapes.AddPicture(fileName, MsoTriState.msoFalse, MsoTriState.msoTrue, 0,0,-1,-1);
+            filename = Path.Combine(Directory.GetCurrentDirectory(), filename);
+            if (!System.IO.File.Exists(filename))
+            {
+                throw new FileNotFoundException(filename);
+            }
+            _slide.Shapes.AddPicture(filename, MsoTriState.msoFalse, MsoTriState.msoTrue, 0,0,-1,-1);
             return this;
         }
+    }
+
+    public class BaseSlide
+    {
     }
 }

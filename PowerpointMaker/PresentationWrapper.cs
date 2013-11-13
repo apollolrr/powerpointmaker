@@ -28,7 +28,7 @@ namespace PowerpointMaker
             }
         }
 
-        public dynamic AddSlide()
+        public dynamic AddTitleSlide()
         {          
             var index = _presentation.Slides.Count;
             var slide = _presentation.Slides.Add(index, PpSlideLayout.ppLayoutTitleOnly);
