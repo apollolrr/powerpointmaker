@@ -46,6 +46,7 @@ namespace PowerpointMaker
             var index = _presentation.Slides.Count;
             var slide = _presentation.Slides.AddSlide(index, _layouts[layoutName]);
 
+            // Refactoring Point - JH, 13.11.2013
             if(layoutName == "Content")
                 return new Content(slide, this);
 

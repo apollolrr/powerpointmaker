@@ -6,6 +6,7 @@ using System.Text;
 
 namespace PowerpointMaker
 {
+    // Refactoring Point - JH, 13.11.2013
     public class Parser
     {
         private Dictionary<string, string> _sectionmap = new Dictionary<string, string>()
@@ -71,6 +72,5 @@ namespace PowerpointMaker
             var type = line.Replace('[', ' ').Replace(']', ' ').Trim();
             return _sectionmap[type];
         }
-    }
-         
+    }       
 }

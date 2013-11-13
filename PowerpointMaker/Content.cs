@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
 
+// Refactoring Point - JH, 13.11.2013
 namespace PowerpointMaker
 {
     public abstract class BaseSlide
@@ -34,7 +35,7 @@ namespace PowerpointMaker
 
     public class Content : BaseSlide
     {
-        public Content(Slide slide, PresentationWrapper presentation) : base(slide, presentation)
+        public Content(Slide slide, PresentationWrapper presentationWrapper) : base(slide, presentationWrapper)
         {
         }
 
@@ -59,6 +60,7 @@ namespace PowerpointMaker
             return this;
         }
 
+        // Refactoring Point - JH, 13.11.2013
         public override void Parse(string[] lines)
         {
             if (lines.Length > 3)
@@ -78,8 +80,8 @@ namespace PowerpointMaker
     public class Sourcecode : BaseSlide
     {
 
-        public Sourcecode(Slide slide, PresentationWrapper presentation)
-            : base(slide, presentation)
+        public Sourcecode(Slide slide, PresentationWrapper PresentationWrapper)
+            : base(slide, PresentationWrapper)
         {
         }
 
@@ -128,6 +130,7 @@ namespace PowerpointMaker
             return int.Parse(size);
         }
 
+        // Refactoring Point - JH, 13.11.2013
         private IEnumerable<int> ParseHighlight(string[] lines)
         {
             var keyword = "Highlight";
@@ -143,8 +146,8 @@ namespace PowerpointMaker
     public class TitleSlide : BaseSlide
     {
 
-        public TitleSlide(Slide slide, PresentationWrapper presentation)
-            : base(slide, presentation)
+        public TitleSlide(Slide slide, PresentationWrapper PresentationWrapper)
+            : base(slide, PresentationWrapper)
         {
         }
 
@@ -154,6 +157,7 @@ namespace PowerpointMaker
             return this;
         }
 
+        // Refactoring Point - JH, 13.11.2013
         public override void Parse(string[] lines)
         {
             Title(lines[0]);
@@ -162,8 +166,8 @@ namespace PowerpointMaker
 
     public class Image : BaseSlide
     {
-        public Image(Slide slide, PresentationWrapper presentation)
-            : base(slide, presentation)
+        public Image(Slide slide, PresentationWrapper PresentationWrapper)
+            : base(slide, PresentationWrapper)
         {
         }
 
@@ -190,6 +194,7 @@ namespace PowerpointMaker
             return this;
         }
 
+        // Refactoring Point - JH, 13.11.2013
         public override void Parse(string[] lines)
         {
             File(lines[0]);
