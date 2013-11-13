@@ -23,12 +23,12 @@ namespace PowerpointMaker
             _powerPoint = new Application();
         }
 
-//        public PresentationWrapper New()
-//        {
-//            const MsoTriState withWindow = MsoTriState.msoFalse;
-//            var newPresentation = _powerPoint.Presentations.Add(withWindow);
-//            return RememberToCloseLater(newPresentation);
-//        }
+        public PresentationWrapper New()
+        {
+            const MsoTriState withWindow = MsoTriState.msoFalse;
+            var newPresentation = _powerPoint.Presentations.Add(withWindow);
+            return RememberToCloseLater(newPresentation);
+        }
 
         public PresentationWrapper OpenFrom(string filename)
         {
@@ -51,7 +51,6 @@ namespace PowerpointMaker
             const MsoTriState openWritable = MsoTriState.msoFalse;
             const MsoTriState openACopy = MsoTriState.msoTrue;
             const MsoTriState displayAWindow = MsoTriState.msoFalse;
-            //MsoTriState.msoFalse, MsoTriState.msoTrue, MsoTriState.msoTrue
             return _powerPoint.Presentations.Open(filename, openWritable, openACopy, displayAWindow);
         }
 
