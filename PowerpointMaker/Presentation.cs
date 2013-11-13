@@ -7,13 +7,13 @@ using Microsoft.Office.Interop.PowerPoint;
 
 namespace PowerpointMaker
 {
-    public class PresentationWrapper
+    public class Presentation
     {
-        private readonly Presentation _presentation;
+        private readonly Microsoft.Office.Interop.PowerPoint.Presentation _presentation;
         private readonly Maker _maker;
         private readonly Dictionary<string, CustomLayout> _layouts = new Dictionary<string, CustomLayout>();       
 
-        public PresentationWrapper(Presentation presentation, Maker maker)
+        public Presentation(Microsoft.Office.Interop.PowerPoint.Presentation presentation, Maker maker)
         {
             _presentation = presentation;
             _maker = maker;
@@ -28,14 +28,14 @@ namespace PowerpointMaker
             }
         }
 
-        public SlideWrapper AddSlide()
+        public Slide AddSlide()
         {          
             var index = _presentation.Slides.Count;
             var slide = _presentation.Slides.Add(index, PpSlideLayout.ppLayoutTitleOnly);
-            return new SlideWrapper(slide, this);
+            return new Slide(slide, this);
         }
 
-        public SlideWrapper AddSlide(string layoutName)
+        public Slide AddSlide(string layoutName)
         {
             if (!_layouts.ContainsKey(layoutName))
             {
@@ -44,7 +44,7 @@ namespace PowerpointMaker
 
             var index = _presentation.Slides.Count;
             var slide = _presentation.Slides.AddSlide(index, _layouts[layoutName]);
-            return new SlideWrapper(slide, this);
+            return new Slide(slide, this);
         }
 
         public Maker Show()

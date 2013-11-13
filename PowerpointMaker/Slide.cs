@@ -2,39 +2,39 @@
 
 namespace PowerpointMaker
 {
-    public class SlideWrapper
+    public class Slide
     {
-        private readonly Slide _slide;
-        private readonly PresentationWrapper _daddy;
+        private readonly Microsoft.Office.Interop.PowerPoint.Slide _slide;
+        private readonly Presentation _daddy;
 
-        public SlideWrapper(Slide slide, PresentationWrapper daddy)
+        public Slide(Microsoft.Office.Interop.PowerPoint.Slide slide, Presentation daddy)
         {
             _slide = slide;
             _daddy = daddy;
         }
 
-        public SlideWrapper Top(string text)
+        public Slide Top(string text)
         {
             var range = _slide.Shapes[1].TextFrame.TextRange;
             range.Text = text;
             return this;
         }
 
-        public SlideWrapper Center(string text)
+        public Slide Center(string text)
         {
             var range = _slide.Shapes[2].TextFrame.TextRange;
             range.Text = text;
             return this;
         }
 
-        public PresentationWrapper Bottom(string text)
+        public Presentation Bottom(string text)
         {
             var range = _slide.Shapes[3].TextFrame.TextRange;
             range.Text = text;
             return _daddy;
         }
 
-        public PresentationWrapper Ok()
+        public Presentation Ok()
         {
             return _daddy;
         }
