@@ -32,7 +32,7 @@ namespace PowerpointMaker
         {          
             var index = _presentation.Slides.Count;
             var slide = _presentation.Slides.Add(index, PpSlideLayout.ppLayoutTitleOnly);
-            return new TitleSlide(slide);
+            return new TitleSlide(slide, this);
         }
 
         public dynamic AddSlide(string layoutName)
@@ -47,13 +47,13 @@ namespace PowerpointMaker
             var slide = _presentation.Slides.AddSlide(index, _layouts[layoutName]);
 
             if(layoutName == "Content")
-                return new Content(slide);
+                return new Content(slide, this);
 
             if (layoutName == "Sourcecode")
-                return new Sourcecode(slide);
+                return new Sourcecode(slide, this);
 
             if (layoutName == "Image")
-                return new Image(slide);
+                return new Image(slide, this);
 
             return null;
         }

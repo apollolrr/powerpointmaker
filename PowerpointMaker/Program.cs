@@ -20,47 +20,43 @@ namespace PowerpointMaker
     {
         public static void Main(string[] args)
         {
+            ParseMal();
+            MachMal();
+        }
+
+        private static void ParseMal()
+        {
+            new Parser().Go("slides.dsl");
+        }
+
+        private static void MachMal()
+        {
             const string template = "Pink Template.potx";
             using (var maker = new Maker())
-            using(var presentation = maker.OpenFrom(template))
+            using (var presentation = maker.OpenFrom(template))
             {
-
                 presentation
                     .AddTitleSlide()
-                    .Title("I <3 NY");
-
-                presentation
+                        .Title("I <3 NY")
                     .AddSlide("Image")
-                    .Caption("Brooklyn Bridge")
-                    .Title("A Day in Manhattan")
-                    .File("image.jpg");
-
-                presentation.
-                    AddSlide("Content")
-                    .Top("I love...")
-                    .Center("New York")
-                    .Bottom("...this city");
-
-                presentation
+                        .File("image.jpg")
+                        .Caption("Brooklyn Bridge")
+                        .Title("A Day in Manhattan")
                     .AddSlide("Content")
-                    .Top("Stay away from")
-                    .Center("CENTRAL PARK")
-                    .Bottom("during nighttime...");
-
-                presentation.
-                    AddSlide("Sourcecode")
-                    .Code("code.cs")
-                    .FontSize(18)
-                    .HightlightLine(1)
-                    .HightlightLine(9)
-                    .HightlightLine(14);
-
-                
-
-                
-
-                presentation
-                    .Save("Presentation");
+                        .Top("I love...")
+                        .Center("New York")
+                        .Bottom("...this city")
+                    .AddSlide("Content")
+                        .Top("Stay away from")
+                        .Center("CENTRAL PARK")
+                        .Bottom("during nighttime...")
+                    .AddSlide("Sourcecode")
+                        .Code("code.cs")
+                        .FontSize(18)
+                        .HightlightLine(1)
+                        .HightlightLine(9)
+                        .HightlightLine(14)
+                    .Save("I-love-NY");
             }
         }
     }

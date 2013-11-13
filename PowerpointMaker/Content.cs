@@ -1,53 +1,91 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
 
 namespace PowerpointMaker
 {
+    public abstract class BaseSlide
+    {
+        protected readonly Slide Slide;
+        private readonly PresentationWrapper _daddy;
+
+        public BaseSlide(Slide slide, PresentationWrapper daddy)
+        {
+            Slide = slide;
+            _daddy = daddy;
+        }
+
+        public BaseSlide AddSlide(string layoutName)
+        {
+            return _daddy.AddSlide(layoutName);
+        }
+
+        public abstract void Parse(string[] lines);
+
+        public void Save(string filename)
+        {
+            _daddy.Save(filename);
+        }
+    }
+
     public class Content : BaseSlide
     {
-        private readonly Slide _slide;
-
-        public Content(Slide slide)
+        public Content(Slide slide, PresentationWrapper presentation) : base(slide, presentation)
         {
-            _slide = slide;
         }
 
         public Content Top(string text)
         {
-            var range = _slide.Shapes[2].TextFrame.TextRange;
+            var range = Slide.Shapes[2].TextFrame.TextRange;
             range.Text = text;
             return this;
         }
 
         public Content Center(string text)
         {
-            var range = _slide.Shapes[1].TextFrame.TextRange;
+            var range = Slide.Shapes[1].TextFrame.TextRange;
             range.Text = text;
             return this;
         }
 
         public Content Bottom(string text)
         {
-            var range = _slide.Shapes[3].TextFrame.TextRange;
+            var range = Slide.Shapes[3].TextFrame.TextRange;
             range.Text = text;
             return this;
         }
+
+        public override void Parse(string[] lines)
+        {
+            if (lines.Length > 3)
+            {
+                throw new TooManyLinesComplaint();
+            }
+            Top(lines[0])
+            .Center(lines[1])
+            .Bottom(lines[2]);
+        }
+    }
+
+    public class TooManyLinesComplaint : Exception
+    {
     }
 
     public class Sourcecode : BaseSlide
     {
-        private readonly Slide _slide;
 
-        public Sourcecode(Slide slide)
+        public Sourcecode(Slide slide, PresentationWrapper presentation)
+            : base(slide, presentation)
         {
-            _slide = slide;
         }
 
         public Sourcecode HightlightLine(int number)
         {           
-            var textFrame = _slide.Shapes[1].TextFrame;
+            var textFrame = Slide.Shapes[1].TextFrame;
             var textRange = textFrame.TextRange.Sentences(number, 1);
             var white = Color.White.ToArgb();
             textRange.Font.Color.RGB = white;
@@ -56,7 +94,7 @@ namespace PowerpointMaker
 
         public Sourcecode FontSize(int number)
         {
-            var textFrame = _slide.Shapes[1].TextFrame;
+            var textFrame = Slide.Shapes[1].TextFrame;
             textFrame.TextRange.Font.Size = number;
             return this;
         }
@@ -66,49 +104,78 @@ namespace PowerpointMaker
         public Sourcecode Code(string filename)
         {
             var code = File.ReadAllText(filename);
-            var textFrame = _slide.Shapes[1].TextFrame;
+            var textFrame = Slide.Shapes[1].TextFrame;
             var textRange = textFrame.TextRange;
             var grey = Color.FromArgb(255, 166, 166, 166).ToArgb();
             textRange.Font.Color.RGB = grey;
             textRange.Text = code;
             return this;
         }
+
+        public override void Parse(string[] lines)
+        {
+            Code(lines[0]);
+            FontSize(ParseFontSize(lines));
+            foreach (var linenumber in ParseHighlight(lines))
+            {
+                HightlightLine(linenumber);
+            }
+        }
+
+        private int ParseFontSize(string[] lines)
+        {
+            var size = (lines.SingleOrDefault(line => line.Contains("Size")) ?? "").Trim().Split(' ').LastOrDefault() ?? "";
+            return int.Parse(size);
+        }
+
+        private IEnumerable<int> ParseHighlight(string[] lines)
+        {
+            var keyword = "Highlight";
+            var trim = (lines.SingleOrDefault(line => line.Contains(keyword)) ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(trim))
+            {
+                return new int[]{};
+            }
+            return trim.Remove(0, keyword.Length).Split(',').Select(int.Parse);
+        }
     }
 
     public class TitleSlide : BaseSlide
     {
-        private readonly Slide _slide;
 
-        public TitleSlide(Slide slide)
+        public TitleSlide(Slide slide, PresentationWrapper presentation)
+            : base(slide, presentation)
         {
-            _slide = slide;
         }
 
         public TitleSlide Title(string text)
         {
-            var range = _slide.Shapes[1].TextFrame.TextRange.Text = text;
+            var range = Slide.Shapes[1].TextFrame.TextRange.Text = text;
             return this;
+        }
+
+        public override void Parse(string[] lines)
+        {
+            Title(lines[0]);
         }
     }
 
     public class Image : BaseSlide
     {
-        private readonly Slide _slide;
-
-        public Image(Slide slide)
+        public Image(Slide slide, PresentationWrapper presentation)
+            : base(slide, presentation)
         {
-            _slide = slide;
         }
 
         public Image Caption(string text)
         {
-            _slide.Shapes[2].TextFrame.TextRange.Text = text;
+            Slide.Shapes[2].TextFrame.TextRange.Text = text;
             return this;
         }
 
         public Image Title(string text)
         {
-            _slide.Shapes[3].TextFrame.TextRange.Text = text;
+            Slide.Shapes[3].TextFrame.TextRange.Text = text;
             return this;
         }
 
@@ -119,12 +186,15 @@ namespace PowerpointMaker
             {
                 throw new FileNotFoundException(filename);
             }
-            _slide.Shapes.AddPicture(filename, MsoTriState.msoFalse, MsoTriState.msoTrue, 0,0,-1,-1);
+            Slide.Shapes.AddPicture(filename, MsoTriState.msoFalse, MsoTriState.msoTrue, 0,0,-1,-1);
             return this;
         }
-    }
 
-    public class BaseSlide
-    {
+        public override void Parse(string[] lines)
+        {
+            File(lines[0]);
+            Caption(lines[1]);
+            Title(lines[2]);
+        }
     }
 }
