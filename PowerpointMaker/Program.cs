@@ -22,25 +22,42 @@ namespace PowerpointMaker
         {
             const string template = "Pink Template.potx";
             using (var maker = new Maker())
+            using(var presentation = maker.OpenFrom(template))
             {
-                maker
-                    .OpenFrom(template)
+
+                presentation
                     .AddSlide()
-                        .Top("Title")
-                        .Ok()
+                    .Title("Title");
 
+                presentation.
+                    AddSlide("Content")
+                    .Top("Top")
+                    .Center("Center")
+                    .Bottom("Bottom");
+
+                presentation.
+                    AddSlide("Sourcecode")
+                    .Code("code.cs")
+                    .FontSize(18)
+                    .HightlightLine(1)
+                    .HightlightLine(9)
+                    .HightlightLine(14);
+
+                presentation
                     .AddSlide("Content")
-                        .Top("Hello")
-                        .Center("Good")
-                        .Bottom("Bye")
+                    .Top("One")
+                    .Center("Two")
+                    .Bottom("Three");
 
-                    .AddSlide("Content")
-                        .Top("Hello")
-                        .Center("Hello")
-                        .Bottom("Hello")
+                presentation
+                    .AddSlide("Image")
+                    .Caption("Caption")
+                    .Title("Title")
+                    .File("Image.jpg");
 
+                presentation
                     .Save("Presentation");
-            }            
+            }
         }
     }
 }

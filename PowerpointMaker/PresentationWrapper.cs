@@ -7,13 +7,13 @@ using Microsoft.Office.Interop.PowerPoint;
 
 namespace PowerpointMaker
 {
-    public class Presentation
+    public class PresentationWrapper : IDisposable
     {
         private readonly Microsoft.Office.Interop.PowerPoint.Presentation _presentation;
         private readonly Maker _maker;
         private readonly Dictionary<string, CustomLayout> _layouts = new Dictionary<string, CustomLayout>();       
 
-        public Presentation(Microsoft.Office.Interop.PowerPoint.Presentation presentation, Maker maker)
+        public PresentationWrapper(Microsoft.Office.Interop.PowerPoint.Presentation presentation, Maker maker)
         {
             _presentation = presentation;
             _maker = maker;
@@ -28,15 +28,16 @@ namespace PowerpointMaker
             }
         }
 
-        public Slide AddSlide()
+        public dynamic AddSlide()
         {          
             var index = _presentation.Slides.Count;
             var slide = _presentation.Slides.Add(index, PpSlideLayout.ppLayoutTitleOnly);
-            return new Slide(slide, this);
+            return new TitleSlide(slide);
         }
 
-        public Slide AddSlide(string layoutName)
+        public dynamic AddSlide(string layoutName)
         {
+
             if (!_layouts.ContainsKey(layoutName))
             {
                 throw new UnknownLayoutException(layoutName, _layouts);
@@ -44,7 +45,17 @@ namespace PowerpointMaker
 
             var index = _presentation.Slides.Count;
             var slide = _presentation.Slides.AddSlide(index, _layouts[layoutName]);
-            return new Slide(slide, this);
+
+            if(layoutName == "Content")
+                return new Content(slide);
+
+            if (layoutName == "Sourcecode")
+                return new Sourcecode(slide);
+
+            if (layoutName == "Image")
+                return new Image(slide);
+
+            return null;
         }
 
         public Maker Show()
@@ -86,6 +97,11 @@ namespace PowerpointMaker
             const PpSaveAsFileType asPresentation = PpSaveAsFileType.ppSaveAsOpenXMLPresentation;
             const MsoTriState andEmbedFonts = MsoTriState.msoCTrue;
             _presentation.SaveAs(filename, asPresentation, andEmbedFonts);
+        }
+
+        public void Dispose()
+        {
+            _presentation.Close();
         }
     }
 }

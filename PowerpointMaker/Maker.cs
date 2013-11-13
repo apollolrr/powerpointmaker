@@ -16,21 +16,20 @@ namespace PowerpointMaker
         }
 
         private readonly Application _powerPoint;
-        private readonly List<Microsoft.Office.Interop.PowerPoint.Presentation> _presentations = new List<Microsoft.Office.Interop.PowerPoint.Presentation>();
         
         public Maker()
         {
             _powerPoint = new Application();
         }
 
-        public Presentation New()
+        public PresentationWrapper New()
         {
             const MsoTriState withWindow = MsoTriState.msoFalse;
             var newPresentation = _powerPoint.Presentations.Add(withWindow);
             return RememberToCloseLater(newPresentation);
         }
 
-        public Presentation OpenFrom(string filename)
+        public PresentationWrapper OpenFrom(string filename)
         {
             var templateFilePath = AbsolutePathFor(filename);
             var presentation = OpenTemplate(templateFilePath);
@@ -54,25 +53,14 @@ namespace PowerpointMaker
             return _powerPoint.Presentations.Open(filename, openWritable, openACopy, displayAWindow);
         }
 
-        private Presentation RememberToCloseLater(Microsoft.Office.Interop.PowerPoint.Presentation presentation)
-        {
-            _presentations.Add(presentation);
-            return new Presentation(presentation, this);
-        }
-
-        public void Done()
-        {
-            foreach (var presentation in _presentations)
-            {
-                presentation.Close();
-            }
-            _presentations.Clear();
-            _powerPoint.Quit();
+        private PresentationWrapper RememberToCloseLater(Microsoft.Office.Interop.PowerPoint.Presentation presentation)
+        {          
+            return new PresentationWrapper(presentation, this);
         }
 
         public void Dispose()
         {
-            Done();
+            _powerPoint.Quit();
         }
     }
 }
